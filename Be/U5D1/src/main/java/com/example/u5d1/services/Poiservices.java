@@ -9,6 +9,7 @@ import com.example.u5d1.repository.PoiRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,8 +62,10 @@ public class Poiservices {
         try {
             return Tipologia.valueOf(tipologia.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
+            // i valori ammessi si leggono dall'enum: aggiungendo una tipologia
+            // il messaggio si aggiorna da solo e non puo' diventare falso
             throw new BadRequestException("Tipologia non valida: " + tipologia
-                    + ". Valori ammessi: BUCA, LAMPIONE, TOMBINO, PARCO, ALTRO");
+                    + ". Valori ammessi: " + Arrays.toString(Tipologia.values()));
         }
     }
 }

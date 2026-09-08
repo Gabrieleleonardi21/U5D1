@@ -5,6 +5,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -47,6 +48,18 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST) // 400: body non convertibile
     public ErrorPayload handleUnreadable(HttpMessageNotReadableException e) {
         return new ErrorPayload("Body della richiesta non valido", LocalDateTime.now());
+    }
+
+    @ExceptionHandler(ServletRequestBindingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400: manca un @RequestParam obbligatorio
+    public ErrorPayload handleParametroMancante(ServletRequestBindingException e) {
+        return new ErrorPayload(e.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(GeocodingException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY) // 502: il problema e' a monte (Google o config), non nella richiesta
+    public ErrorPayload handleGeocoding(GeocodingException e) {
+        return new ErrorPayload(e.getMessage(), LocalDateTime.now());
     }
 
     @ExceptionHandler(Exception.class)
